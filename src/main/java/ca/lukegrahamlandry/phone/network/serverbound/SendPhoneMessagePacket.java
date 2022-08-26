@@ -35,7 +35,7 @@ public class SendPhoneMessagePacket {
     public static void handle(SendPhoneMessagePacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             MessageData msg = new MessageData(packet.phoneID, packet.message);
-            PhoneDataStorage.get(ctx.get().getSender().getLevel()).getMessages(packet.channel).add(msg);
+            PhoneDataStorage.get(ctx.get().getSender().getLevel()).addMessage(packet.channel, msg);
             NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new SyncPhoneMessagesPacket(Collections.singletonList(msg), packet.channel, false));
         });
         ctx.get().setPacketHandled(true);

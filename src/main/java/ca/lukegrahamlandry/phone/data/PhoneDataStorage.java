@@ -62,4 +62,9 @@ public class PhoneDataStorage extends WorldSavedData {
         if (!messages.containsKey(channel)) messages.put(channel, new ArrayList<>());
         return messages.get(channel);
     }
+
+    public void addMessage(String channel, MessageData msg) {
+        this.getMessages(channel).add(msg);
+        this.setDirty();
+    }
 }
