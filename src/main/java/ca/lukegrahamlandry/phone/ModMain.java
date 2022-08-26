@@ -4,7 +4,9 @@ import ca.lukegrahamlandry.phone.data.MessageData;
 import ca.lukegrahamlandry.phone.data.PhoneDataStorage;
 import ca.lukegrahamlandry.phone.network.NetworkHandler;
 import ca.lukegrahamlandry.phone.network.clientbound.SyncPhoneMessagesPacket;
+import ca.lukegrahamlandry.phone.objects.PhoneItem;
 import net.minecraft.item.Item;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -33,7 +35,7 @@ public class ModMain {
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event){
        if (!event.getPlayer().level.isClientSide()){
-           for (Map.Entry<String, List<MessageData>> channel : PhoneDataStorage.get().messages.entrySet()){
+           for (Map.Entry<String, List<MessageData>> channel : PhoneDataStorage.get((ServerWorld) event.getPlayer().level).messages.entrySet()){
                NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new SyncPhoneMessagesPacket(channel.getValue(), channel.getKey(), true));
            }
        }

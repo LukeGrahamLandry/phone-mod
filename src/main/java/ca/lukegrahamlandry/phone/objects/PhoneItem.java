@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.phone;
+package ca.lukegrahamlandry.phone.objects;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,4 +1,4 @@
-package ca.lukegrahamlandry.phone;
+package ca.lukegrahamlandry.phone.objects;
 
 import ca.lukegrahamlandry.phone.data.MessageData;
 import ca.lukegrahamlandry.phone.network.NetworkHandler;
