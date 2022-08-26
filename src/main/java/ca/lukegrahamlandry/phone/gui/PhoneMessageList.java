@@ -35,23 +35,26 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
             if (msg.message.isEmpty()) continue;
 
             List<TextComponent> lines = new ArrayList<>();
-            lines.add(new StringTextComponent(""));
             String[] words = msg.message.split(" ");
             StringBuilder textLine = new StringBuilder();
+            int w = 0;
             for (String word : words){
                 if (font.width(textLine + " " + word) > targetWidth){
                     lines.add(new StringTextComponent(textLine.toString()));
+                    w = Math.max(w, font.width(textLine.toString()));
                     textLine = new StringBuilder();
                 }
 
                 textLine.append(" ").append(word);
             }
             lines.add(new StringTextComponent(textLine.toString()));
+            lines.add(new StringTextComponent(""));
 
-            int w = font.width(lines.get(1));
-            System.out.println(w);
-            boolean sentBySelf = new Random().nextBoolean(); // msg.phoneId == currentPhoneID
-            lines.forEach(line -> this.addEntry(new Entry(line, sentBySelf, w)));
+            w = Math.max(w, font.width(textLine.toString()));
+
+            boolean sentBySelf = msg.phoneId == currentPhoneID;
+            int finalW = w;
+            lines.forEach(line -> this.addEntry(new Entry(line, sentBySelf, finalW)));
         }
 
     }
@@ -94,7 +97,15 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
 
         @Override
         public void render(MatrixStack stack, int index, int y, int x, int p_230432_5_, int p_230432_6_, int p_230432_7_, int p_230432_8_, boolean p_230432_9_, float p_230432_10_) {
+            PhoneMessageList.this.minecraft.getTextureManager().bind(PhoneMessageList.this.screen.TEXTURE);
             if (this.text.getContents().isEmpty()){
+                int xPos = PhoneMessageList.this.x0;
+                if (sentBySelf){
+                    xPos = PhoneMessageList.this.x0 + PhoneMessageList.this.width - 99;
+                }
+
+                int uPos = this.sentBySelf ? 365 : 263;
+                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, uPos, 0, 99, 20, 512, 512);
 
             } else {
                 int xPos = PhoneMessageList.this.x0 + 5;
@@ -102,8 +113,7 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
                     xPos = PhoneMessageList.this.x0 + PhoneMessageList.this.width - this.msgWidth - 10 - 5;
                 }
 
-                PhoneMessageList.this.minecraft.getTextureManager().bind(PhoneMessageList.this.screen.TEXTURE);
-                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, 290, 0, msgWidth +10, 20, 512, 512);
+                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, 0, 0, msgWidth +10, 20, 512, 512);
                 font.draw(stack, this.text, xPos, y, 0x000000);
             }
         }

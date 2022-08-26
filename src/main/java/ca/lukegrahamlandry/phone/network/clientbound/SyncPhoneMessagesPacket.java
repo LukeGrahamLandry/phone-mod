@@ -54,15 +54,29 @@ public class SyncPhoneMessagesPacket {
                 if (!MessageData.clientMessages.containsKey(packet.channel)) MessageData.clientMessages.put(packet.channel, new ArrayList<>());
 
                 MessageData.clientMessages.get(packet.channel).addAll(packet.messages);
-                showNotif(packet.channel);
+                showNotif(packet.channel, packet.messages);
             }
         });
         ctx.get().setPacketHandled(true);
     }
 
-    private static void showNotif(String channel) {
+    private static void showNotif(String channel, List<MessageData> msgs) {
         PlayerEntity player = Minecraft.getInstance().player;
-        if (player == null || (Minecraft.getInstance().screen instanceof PhoneGui && ((PhoneGui) Minecraft.getInstance().screen).channel.equals(channel))) return;
+
+        if (player == null) return;
+
+
+        if (Minecraft.getInstance().screen instanceof PhoneGui) {
+            PhoneGui phone = (PhoneGui) Minecraft.getInstance().screen;
+            if (phone.channel.equals(channel)){
+                List<MessageData> messagesToAdd = new ArrayList<>(msgs);
+                messagesToAdd.removeIf((m) -> phone.phoneID == m.phoneId);  // ones sent by you are already added
+                phone.displayMessages.addAll(msgs);
+                if (!messagesToAdd.isEmpty()) phone.init();
+                return;
+            }
+        }
+
         for (ItemStack stack : player.inventory.items){
             if (stack.getItem() instanceof PhoneItem){
                 if (((PhoneItem) stack.getItem()).channel.equals(channel)){
