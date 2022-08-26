@@ -1,13 +1,12 @@
 package ca.lukegrahamlandry.phone.network.clientbound;
 
 import ca.lukegrahamlandry.phone.data.MessageData;
-import ca.lukegrahamlandry.phone.objects.PhoneGui;
+import ca.lukegrahamlandry.phone.gui.PhoneGui;
 import ca.lukegrahamlandry.phone.objects.PhoneItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 

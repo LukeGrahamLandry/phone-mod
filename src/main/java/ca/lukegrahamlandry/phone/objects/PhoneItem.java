@@ -1,5 +1,6 @@
 package ca.lukegrahamlandry.phone.objects;
 
+import ca.lukegrahamlandry.phone.gui.PhoneGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
