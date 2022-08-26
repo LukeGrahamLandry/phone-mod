@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhoneGui extends Screen {
-    private final String channel;
+    public final String channel;
     private final int phoneID;
     TextFieldWidget message;
     List<MessageData> displayMessages;
@@ -39,12 +39,12 @@ public class PhoneGui extends Screen {
         this.message = new TextFieldWidget(this.font, this.guiLeft + 13, (this.height - this.ySize + 50) / 2, 150, 20, this.message, new StringTextComponent("Phone Message"));
         this.addButton(this.message);
         this.setFocused(this.message);
+        this.message.setFocus(true);
     }
 
     private void sendPhoneMessage() {
         NetworkHandler.INSTANCE.sendToServer(new SendPhoneMessagePacket(this.message.getValue(), this.channel, this.phoneID));
         this.displayMessages.add(new MessageData(this.phoneID, this.message.getValue()));
-        this.message.setValue("");
         init();
     }
 
@@ -52,7 +52,7 @@ public class PhoneGui extends Screen {
     public boolean keyPressed(int keyCode, int p_231046_2_, int p_231046_3_) {
         if (keyCode == GLFW.GLFW_KEY_ENTER && !hasShiftDown()){
             sendPhoneMessage();
-            return true;
+            return false;
         }
         return super.keyPressed(keyCode, p_231046_2_, p_231046_3_);
     }

@@ -1,7 +1,14 @@
 package ca.lukegrahamlandry.phone.network.clientbound;
 
 import ca.lukegrahamlandry.phone.data.MessageData;
+import ca.lukegrahamlandry.phone.objects.PhoneGui;
+import ca.lukegrahamlandry.phone.objects.PhoneItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
@@ -44,8 +51,26 @@ public class SyncPhoneMessagesPacket {
     public static void handle(SyncPhoneMessagesPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (packet.replace) MessageData.clientMessages.put(packet.channel, packet.messages);
-            else MessageData.clientMessages.get(packet.channel).addAll(packet.messages);
+            else {
+                if (!MessageData.clientMessages.containsKey(packet.channel)) MessageData.clientMessages.put(packet.channel, new ArrayList<>());
+
+                MessageData.clientMessages.get(packet.channel).addAll(packet.messages);
+                showNotif(packet.channel);
+            }
         });
         ctx.get().setPacketHandled(true);
+    }
+
+    private static void showNotif(String channel) {
+        PlayerEntity player = Minecraft.getInstance().player;
+        if (player == null || (Minecraft.getInstance().screen instanceof PhoneGui && ((PhoneGui) Minecraft.getInstance().screen).channel.equals(channel))) return;
+        for (ItemStack stack : player.inventory.items){
+            if (stack.getItem() instanceof PhoneItem){
+                if (((PhoneItem) stack.getItem()).channel.equals(channel)){
+                    player.displayClientMessage(new StringTextComponent("Phone Message Received (" + channel + ")"), false);
+                    break;
+                }
+            }
+        }
     }
 }

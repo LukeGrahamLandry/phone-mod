@@ -1,6 +1,7 @@
 package ca.lukegrahamlandry.phone.objects;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,7 +15,7 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class PhoneItem extends Item {
-    String channel;
+    public final String channel;
     public PhoneItem(Properties p_i48487_1_, String channel) {
         super(p_i48487_1_);
         this.channel = channel;
@@ -53,5 +54,12 @@ public class PhoneItem extends Item {
         }
 
         return super.useOn(ctx);
+    }
+
+    // have to call getId on server side so it saves and syncs to client
+    @Override
+    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        getId(p_77663_1_);
     }
 }
