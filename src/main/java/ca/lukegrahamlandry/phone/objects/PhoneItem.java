@@ -1,7 +1,6 @@
 package ca.lukegrahamlandry.phone.objects;
 
-import ca.lukegrahamlandry.phone.gui.PhoneGui;
-import net.minecraft.client.Minecraft;
+import ca.lukegrahamlandry.phone.network.clientbound.ClientHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -34,14 +33,10 @@ public class PhoneItem extends Item {
         return stack.getTag().getInt(PHONE_ID_KEY);
     }
 
-    private void openGui(ItemStack stack){
-        Minecraft.getInstance().setScreen(new PhoneGui(this.channel, getId(stack)));
-    }
-
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (world.isClientSide() && hand == Hand.MAIN_HAND) {
-            openGui(player.getItemInHand(hand));
+            ClientHelper.openGui(this.channel, getId(player.getItemInHand(hand)));
             return ActionResult.success(player.getItemInHand(hand));
         }
 
@@ -51,7 +46,7 @@ public class PhoneItem extends Item {
     @Override
     public ActionResultType useOn(ItemUseContext ctx) {
         if (ctx.getLevel().isClientSide() && ctx.getHand() == Hand.MAIN_HAND) {
-            openGui(ctx.getPlayer().getItemInHand(ctx.getHand()));
+            ClientHelper.openGui(this.channel, getId(ctx.getPlayer().getItemInHand(ctx.getHand())));
             return ActionResultType.SUCCESS;
         }
 
