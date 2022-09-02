@@ -7,6 +7,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.list.ExtendedList;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -18,7 +19,7 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
     private final PhoneGui screen;
 
     public PhoneMessageList(PhoneGui p_i45049_1_, Minecraft p_i45049_2_, int x, int p_i45049_3_, int p_i45049_4_, int p_i45049_5_, int p_i45049_6_) {
-        super(p_i45049_2_, p_i45049_3_, p_i45049_4_, p_i45049_5_, p_i45049_6_, 20);
+        super(p_i45049_2_, p_i45049_3_, p_i45049_4_, p_i45049_5_, p_i45049_6_, 16);
         this.screen = p_i45049_1_;
         this.setRenderBackground(false);
         this.setRenderHeader(false, 0);
@@ -89,10 +90,13 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
         private final boolean sentBySelf;
         TextComponent text;
         int msgWidth;
+        String channel;
         public Entry(TextComponent message, boolean sentBySelf, int w){
             this.text = message;
             this.msgWidth = w;
             this.sentBySelf = sentBySelf;
+            this.channel = PhoneMessageList.this.screen.channel;
+            if ("encrypted".equals(this.channel)) this.text = (TextComponent) this.text.withStyle(TextFormatting.WHITE);
         }
 
         @Override
@@ -104,8 +108,11 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
                     xPos = PhoneMessageList.this.x0 + PhoneMessageList.this.width - 99;
                 }
 
-                int uPos = this.sentBySelf ? 365 : 263;
-                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, uPos, 0, 99, 20, 512, 512);
+                int uPos = "encrypted".equals(this.channel) ? 262 : 1;
+                if (this.sentBySelf) uPos += 102;
+                int vPos = 42;
+
+                PhoneMessageList.this.screen.blit(stack, xPos, y-5 +4, 0, uPos, vPos, 99, 20, 512, 512);
 
             } else {
                 int xPos = PhoneMessageList.this.x0 + 5;
@@ -113,7 +120,9 @@ public class PhoneMessageList extends ExtendedList<PhoneMessageList.Entry> {
                     xPos = PhoneMessageList.this.x0 + PhoneMessageList.this.width - this.msgWidth - 10 - 5;
                 }
 
-                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, 0, 0, msgWidth +10, 20, 512, 512);
+                int uPos = "encrypted".equals(this.channel) ? 261 : 0;
+
+                PhoneMessageList.this.screen.blit(stack, xPos, y-5, 0, uPos, 0, msgWidth +10, 20, 512, 512);
                 font.draw(stack, this.text, xPos, y, 0x000000);
             }
         }

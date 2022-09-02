@@ -2,9 +2,11 @@ package ca.lukegrahamlandry.phone.objects;
 
 import ca.lukegrahamlandry.phone.data.MessageData;
 import ca.lukegrahamlandry.phone.data.PhoneDataStorage;
+import ca.lukegrahamlandry.phone.network.NetworkHandler;
+import ca.lukegrahamlandry.phone.network.clientbound.SyncPhoneMessagesPacket;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -13,23 +15,25 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.ResourceLocationArgument;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ClearPhoneCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("admin")
+        return Commands.literal("clearphone")
                 .requires(cs-> cs.hasPermission(2))
-                .then(Commands.literal("phone")
-                        .then(Commands.argument("channel", new PhoneChannelArgumentType())
-                                .executes(ClearPhoneCommand::handle))
-                );
+                .then(Commands.argument("channel", new PhoneChannelArgumentType())
+                        .executes(ClearPhoneCommand::handle)).executes((ctx) -> {
+                            ctx.getSource().sendFailure(new StringTextComponent("must specify channel name to clear"));
+                            return Command.SINGLE_SUCCESS;
+                });
     }
 
     private static int handle(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
@@ -39,10 +43,11 @@ public class ClearPhoneCommand {
         ctx.getSource().sendSuccess(new StringTextComponent("cleared " + messages.size() + " messages from " + channel), true);
         messages.clear();
         data.setDirty();
+        NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new SyncPhoneMessagesPacket(messages, channel, true));
         return Command.SINGLE_SUCCESS;
     }
 
-    public static class PhoneChannelArgumentType extends ResourceLocationArgument {
+    public static class PhoneChannelArgumentType implements ArgumentType<String> {
         private static final DynamicCommandExceptionType INVALID = new DynamicCommandExceptionType((p_106991_) -> {
             return new TranslationTextComponent("invalid.phone.channel", p_106991_);
         });
@@ -58,6 +63,11 @@ public class ClearPhoneCommand {
             }
         }
 
+        @Override
+        public String parse(StringReader reader) throws CommandSyntaxException {
+            return reader.readString();
+        }
+
         public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
             StringReader stringreader = new StringReader(builder.getInput());
             stringreader.setCursor(builder.getStart());
@@ -66,7 +76,7 @@ public class ClearPhoneCommand {
 
             stringreader.skipWhitespace();
 
-            Collection<String> options = PhoneDataStorage.get(((CommandSource) context.getSource()).getLevel()).messages.keySet();
+            Collection<String> options = Arrays.asList("public", "encrypted");
             for (String check : options){
                 if (check.startsWith(s)) builder.suggest(check);
             }

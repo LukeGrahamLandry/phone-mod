@@ -40,7 +40,7 @@ public class PhoneGui extends Screen {
         super.init();
 
         this.guiLeft = (this.width - this.xSize) / 2;
-        this.guiTop = 0; //(this.height - this.ySize) / 2 - 10;
+        this.guiTop = 0;
 
         if (this.children.size() == 0){
             this.messageList = new PhoneMessageList(this, Minecraft.getInstance(), this.guiLeft, this.xSize, this.ySize, this.guiTop /*+25*/, this.guiTop + this.ySize);
@@ -69,8 +69,7 @@ public class PhoneGui extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int p_231046_2_, int p_231046_3_) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER && !hasShiftDown()){
-            System.out.println(this.message.getValue());
+        if (keyCode == GLFW.GLFW_KEY_ENTER){ // && !hasShiftDown()){
             sendPhoneMessage();
             return true;
         }
@@ -88,7 +87,7 @@ public class PhoneGui extends Screen {
     @Override
     public void render(MatrixStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
         this.minecraft.getTextureManager().bind(TEXTURE);
-        this.blit(p_230430_1_, this.guiLeft, this.guiTop, 0, "encrypted".equals(this.channel) ? 260 : 0, 50, this.xSize, this.ySize, 512, 512);
+        this.blit(p_230430_1_, this.guiLeft, this.guiTop, 0, "encrypted".equals(this.channel) ? 261 : 0, 66, this.xSize, this.ySize, 512, 512);
 
         this.messageList.render(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);
         super.render(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);

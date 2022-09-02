@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,7 +24,7 @@ public class PhoneItem extends Item {
     }
 
     public PhoneItem(String channel) {
-        this(new Item.Properties(), channel);
+        this(new Item.Properties().tab(ItemGroup.TAB_MISC), channel);
     }
 
     private static final String PHONE_ID_KEY = "phone_id";

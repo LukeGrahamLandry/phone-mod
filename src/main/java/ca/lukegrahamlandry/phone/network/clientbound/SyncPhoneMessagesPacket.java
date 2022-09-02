@@ -7,7 +7,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
@@ -49,7 +56,12 @@ public class SyncPhoneMessagesPacket {
 
     public static void handle(SyncPhoneMessagesPacket packet, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (packet.replace) MessageData.clientMessages.put(packet.channel, packet.messages);
+            if (packet.replace) {
+                MessageData.clientMessages.put(packet.channel, packet.messages);
+                if (Minecraft.getInstance().screen instanceof PhoneGui && ((PhoneGui) Minecraft.getInstance().screen).channel.equals(packet.channel)) {
+                    Minecraft.getInstance().setScreen(null);
+                }
+            }
             else {
                 if (!MessageData.clientMessages.containsKey(packet.channel)) MessageData.clientMessages.put(packet.channel, new ArrayList<>());
 
@@ -59,6 +71,9 @@ public class SyncPhoneMessagesPacket {
         });
         ctx.get().setPacketHandled(true);
     }
+
+    static Style PUBLIC_COLOUR = Style.EMPTY.withColor(TextFormatting.GRAY);
+    static Style ENCRYPTED_COLOUR = Style.EMPTY.withColor(Color.parseColor("#882123"));
 
     private static void showNotif(String channel, List<MessageData> msgs) {
         PlayerEntity player = Minecraft.getInstance().player;
@@ -71,7 +86,7 @@ public class SyncPhoneMessagesPacket {
             if (phone.channel.equals(channel)){
                 List<MessageData> messagesToAdd = new ArrayList<>(msgs);
                 messagesToAdd.removeIf((m) -> phone.phoneID == m.phoneId);  // ones sent by you are already added
-                phone.displayMessages.addAll(msgs);
+                phone.displayMessages.addAll(messagesToAdd);
                 if (!messagesToAdd.isEmpty()) phone.init();
                 return;
             }
@@ -80,7 +95,9 @@ public class SyncPhoneMessagesPacket {
         for (ItemStack stack : player.inventory.items){
             if (stack.getItem() instanceof PhoneItem){
                 if (((PhoneItem) stack.getItem()).channel.equals(channel)){
-                    player.displayClientMessage(new StringTextComponent("Phone Message Received (" + channel + ")"), false);
+                    player.displayClientMessage(new StringTextComponent("Message received.").withStyle(channel.equals("encrypted") ? ENCRYPTED_COLOUR : PUBLIC_COLOUR), false);
+                    SoundEvent sound = Registry.SOUND_EVENT.get(new ResourceLocation("proximitybase:phone"));
+                    if (sound != null) player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 1, 1, false);
                     break;
                 }
             }

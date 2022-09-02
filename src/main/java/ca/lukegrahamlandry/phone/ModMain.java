@@ -8,6 +8,7 @@ import ca.lukegrahamlandry.phone.objects.ClearPhoneCommand;
 import ca.lukegrahamlandry.phone.objects.PhoneItem;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -41,7 +42,7 @@ public class ModMain {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event){
        if (!event.getPlayer().level.isClientSide()){
            for (Map.Entry<String, List<MessageData>> channel : PhoneDataStorage.get((ServerWorld) event.getPlayer().level).messages.entrySet()){
-               NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new SyncPhoneMessagesPacket(channel.getValue(), channel.getKey(), true));
+               NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), new SyncPhoneMessagesPacket(channel.getValue(), channel.getKey(), true));
            }
        }
     }
