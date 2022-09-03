@@ -48,7 +48,7 @@ public class ClientHelper {
             PhoneGui phone = (PhoneGui) Minecraft.getInstance().screen;
             if (phone.channel.equals(channel)){
                 List<MessageData> messagesToAdd = new ArrayList<>(msgs);
-                messagesToAdd.removeIf((m) -> phone.phoneID == m.phoneId);  // ones sent by you are already added
+                if (phone.canSendMessages) messagesToAdd.removeIf((m) -> phone.phoneID == m.phoneId);  // ones sent by you are already added
                 phone.displayMessages.addAll(messagesToAdd);
                 if (!messagesToAdd.isEmpty()) phone.init();
                 return;
@@ -68,7 +68,7 @@ public class ClientHelper {
     }
 
 
-    public static void openGui(String channel, int id){
-        Minecraft.getInstance().setScreen(new PhoneGui(channel, id));
+    public static void openGui(String channel, int id, boolean canSendMessages){
+        Minecraft.getInstance().setScreen(new PhoneGui(channel, id, canSendMessages));
     }
 }

@@ -4,8 +4,10 @@ import ca.lukegrahamlandry.phone.data.MessageData;
 import ca.lukegrahamlandry.phone.data.PhoneDataStorage;
 import ca.lukegrahamlandry.phone.network.NetworkHandler;
 import ca.lukegrahamlandry.phone.network.clientbound.SyncPhoneMessagesPacket;
-import ca.lukegrahamlandry.phone.objects.ClearPhoneCommand;
+import ca.lukegrahamlandry.phone.commands.ClearPhoneCommand;
+import ca.lukegrahamlandry.phone.commands.PhoneChannelArgumentType;
 import ca.lukegrahamlandry.phone.objects.PhoneItem;
+import ca.lukegrahamlandry.phone.commands.ViewPhoneCommand;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -31,7 +33,7 @@ public class ModMain {
 
     public ModMain() {
         NetworkHandler.registerMessages();
-        ArgumentTypes.register(ModMain.MOD_ID + "channel", ClearPhoneCommand.PhoneChannelArgumentType.class, new ArgumentSerializer<>(ClearPhoneCommand.PhoneChannelArgumentType::new));
+        ArgumentTypes.register(ModMain.MOD_ID + "channel", PhoneChannelArgumentType.class, new ArgumentSerializer<>(PhoneChannelArgumentType::new));
 
         ITEMS.register("public_phone", () -> new PhoneItem("public"));
         ITEMS.register("encrypted_phone", () -> new PhoneItem("encrypted"));
@@ -50,5 +52,6 @@ public class ModMain {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event){
         event.getDispatcher().register(ClearPhoneCommand.register());
+        event.getDispatcher().register(ViewPhoneCommand.register());
     }
 }

@@ -36,7 +36,7 @@ public class PhoneItem extends Item {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (world.isClientSide() && hand == Hand.MAIN_HAND) {
-            ClientHelper.openGui(this.channel, getId(player.getItemInHand(hand)));
+            ClientHelper.openGui(this.channel, getId(player.getItemInHand(hand)), true);
             return ActionResult.success(player.getItemInHand(hand));
         }
 
@@ -46,7 +46,7 @@ public class PhoneItem extends Item {
     @Override
     public ActionResultType useOn(ItemUseContext ctx) {
         if (ctx.getLevel().isClientSide() && ctx.getHand() == Hand.MAIN_HAND) {
-            ClientHelper.openGui(this.channel, getId(ctx.getPlayer().getItemInHand(ctx.getHand())));
+            ClientHelper.openGui(this.channel, getId(ctx.getPlayer().getItemInHand(ctx.getHand())), true);
             return ActionResultType.SUCCESS;
         }
 

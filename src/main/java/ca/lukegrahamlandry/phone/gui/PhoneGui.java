@@ -19,6 +19,7 @@ public class PhoneGui extends Screen {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ModMain.MOD_ID, "textures/gui.png");
     public final String channel;
     public final int phoneID;
+    public final boolean canSendMessages;
     TextFieldWidget message;
     public List<MessageData> displayMessages;
     PhoneMessageList messageList;
@@ -28,10 +29,11 @@ public class PhoneGui extends Screen {
     private int guiLeft;
     private int guiTop;
 
-    public PhoneGui(String channel, int phoneID) {
+    public PhoneGui(String channel, int phoneID, boolean canSendMessages) {
         super(new StringTextComponent("Phone"));
         this.channel = channel;
         this.phoneID = phoneID;
+        this.canSendMessages = canSendMessages;
         this.displayMessages = MessageData.clientMessages.containsKey(channel) ? new ArrayList<>(MessageData.clientMessages.get(channel)) : new ArrayList<>();
     }
 
@@ -69,7 +71,7 @@ public class PhoneGui extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int p_231046_2_, int p_231046_3_) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER){ // && !hasShiftDown()){
+        if (keyCode == GLFW.GLFW_KEY_ENTER && this.canSendMessages){ // && !hasShiftDown()){
             sendPhoneMessage();
             return true;
         }
