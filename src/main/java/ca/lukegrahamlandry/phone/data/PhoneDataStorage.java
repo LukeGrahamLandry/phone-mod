@@ -13,6 +13,12 @@ import java.util.Map;
 public class PhoneDataStorage extends WorldSavedData {
     public PhoneDataStorage() {
         super(ModMain.MOD_ID);
+
+        // initialize the channels we want to exist
+        // case: clients play -> log out -> reset world data -> rejoin (without restarting client)
+        // result: no channels exist so the fact that they should be cleared never gets synced to the client so MessageData#clientMessages keeps history that is no longer on server
+        getMessages("public");
+        getMessages("encrypted");
     }
 
     @Override

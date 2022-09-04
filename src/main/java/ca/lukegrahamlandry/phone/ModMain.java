@@ -50,6 +50,13 @@ public class ModMain {
     }
 
     @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event){
+        if (event.getPlayer().level.isClientSide()){
+           MessageData.clientMessages.clear();
+        }
+    }
+
+    @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event){
         event.getDispatcher().register(ClearPhoneCommand.register());
         event.getDispatcher().register(ViewPhoneCommand.register());
