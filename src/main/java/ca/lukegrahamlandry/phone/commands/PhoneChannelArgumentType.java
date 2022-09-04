@@ -46,7 +46,7 @@ public class PhoneChannelArgumentType implements ArgumentType<String> {
 
         stringreader.skipWhitespace();
 
-        Collection<String> options = Arrays.asList("public", "encrypted"); // MessageData.clientMessages.keySet(); would be used if channels weren't hard coded
+        Collection<String> options = MessageData.clientMessages.keySet();
         for (String check : options) {
             if (check.startsWith(s)) builder.suggest(check);
         }

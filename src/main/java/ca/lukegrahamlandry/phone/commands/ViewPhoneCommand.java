@@ -36,7 +36,7 @@ public class ViewPhoneCommand {
         for (MessageData msg : data.getMessages(channel)){
             if (!phones.contains(msg.phoneId)) phones.add(msg.phoneId);
         }
-        int id = phones.get(new Random().nextInt(phones.size()));
+        int id = phones.isEmpty() ? 0 : phones.get(new Random().nextInt(phones.size()));
         NetworkHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new OpenPhoneGuiPacket(id, channel));
         return Command.SINGLE_SUCCESS;
     }
